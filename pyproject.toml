@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "pykli"
-version = "0.1.0"
-description = ""
+version = "0.0.1"
+description = "ksqlDB command line client"
 authors = ["Ievgenii Shepeliuk <eshepelyuk@gmail.com>"]
 readme = "README.md"
-packages = [{include = "cli", from = "src"}]
+packages = [{include = "pykli"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -13,13 +13,15 @@ prompt-toolkit = "^3.0.38"
 pygments = "^2.15.1"
 xdg-base-dirs = "^6.0.0"
 httpx = {extras = ["http2"], version = "^0.24.1"}
+cli_helpers = {extras = ["styles"], version = "^2.3.0"}
+sqlparse = "^0.4.4"
 
 [tool.poetry.scripts]
-pykli = "cli.__main__:main"
+pykli = "pykli.__main__:main"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-line-length = 120
+line-length = 140
