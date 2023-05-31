@@ -4,4 +4,6 @@ from pygments.styles import get_style_by_name
 
 CONFIG_DIR = xdg_config_home() / "pykli"
 
+HISTORY_FILE = CONFIG_DIR / "history"
+
 MONOKAI_STYLE = get_style_by_name('monokai')
