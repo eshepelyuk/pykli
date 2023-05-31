@@ -9,6 +9,8 @@ from cli_helpers.tabular_output.preprocessors import style_output
 
 from . import MONOKAI_STYLE
 
+DESCRIBE_HEADERS = ("Field", "Type")
+
 KSQL_SHOW_TYPES = {
     "connector_list": (
         lambda j : j["connectors"],
@@ -59,7 +61,7 @@ def print_show(data_type, json):
         data = data_extractor(json)
         ff = format_output(row_extractor(data), headers, format_name="psql", preprocessors=(style_output,),
             header_token=Token.String, odd_row_token=None, even_row_token=None,
-            style=MONOKAI_STYLE, include_default_pygments_style=False)
+            style=MONOKAI_STYLE, iinclude_default_pygments_style=False)
 
         click.secho("\n".join(ff))
         # click.echo_via_pager("\n".join(ff))
@@ -67,9 +69,15 @@ def print_show(data_type, json):
         click.secho(f"`show` not implemented for: {data_type}", fg="red")
         pprint(json)
 
-def print_describe(json):
-    click.secho(f"`describe` not implemented", fg="red")
-    pprint(json)
+def print_describe(data):
+    def row_extractor(rows):
+        for r in rows:
+            yield (r["name"], f"{r['schema']['type']} header('{r['headerKey']}')" if "headerKey" in r else r["schema"]["type"])
+
+    ff = format_output(row_extractor(data), DESCRIBE_HEADERS, format_name="psql", preprocessors=(style_output,),
+            header_token=Token.String, odd_row_token=None, even_row_token=None,
+            style=MONOKAI_STYLE, include_default_pygments_style=False)
+    click.secho("\n".join(ff))
 
 def print_stmt(resp):
     for json in resp:
@@ -77,7 +85,7 @@ def print_stmt(resp):
         if stmt.startswith("show"):
             print_show(json["@type"], json)
         elif stmt.startswith("describe"):
-            print_describe(json)
+            print_describe(json["sourceDescription"]["fields"])
         else:
             click.secho(f"not implemented: {stmt}", fg="red")
 
