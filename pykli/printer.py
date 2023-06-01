@@ -1,6 +1,7 @@
 import click
 import sqlparse
 from pprint import pformat, pprint
+from textwrap import wrap
 
 from pygments.token import Token
 
@@ -55,6 +56,26 @@ KSQL_SHOW_TYPES = {
     ),
 }
 
+
+def format_ksql_type(type_def) -> str:
+    match type_def:
+        case {"type": "KEY", "schema": {"type": "STRING"}}:
+            return "VARCHAR (key)"
+        case {"schema": {"type": "STRING"}}:
+            return "VARCHAR"
+        case {"schema": {"type": "STRUCT", "fields": flds}}:
+            types_str = "\n".join(wrap(', '.join(f['name'] for f in flds), width=70))
+            return f"STRUCT<{types_str}>"
+        case {"type": "KEY", "schema": {"type": tp}}:
+            return f"{tp} (key)"
+        case {"type": "HEADER", "headerKey": hdr, "schema": {"type": tp}}:
+            return f"{tp} (header('{hdr}'))"
+        case {"schema": {"type": tp}}:
+            return tp
+        case _:
+            return pformat(type_def)
+
+
 def print_show(data_type, json):
     if data_type in KSQL_SHOW_TYPES:
         data_extractor, headers, row_extractor = KSQL_SHOW_TYPES[data_type]
@@ -69,11 +90,11 @@ def print_show(data_type, json):
         click.secho(f"`show` not implemented for: {data_type}", fg="red")
         pprint(json)
 
+
 def print_describe(data):
     def row_extractor(rows):
         for r in rows:
-            yield (r["name"], f"{r['schema']['type']} header('{r['headerKey']}')" if "headerKey" in r else r["schema"]["type"])
-
+            yield (r["name"], format_ksql_type(r))
     ff = format_output(row_extractor(data), DESCRIBE_HEADERS, format_name="psql", preprocessors=(style_output,),
             header_token=Token.String, odd_row_token=None, even_row_token=None,
             style=MONOKAI_STYLE, include_default_pygments_style=False)
