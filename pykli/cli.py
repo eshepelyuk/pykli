@@ -1,6 +1,5 @@
 import httpx
-import click
-from pprint import pformat, pprint
+from pprint import pformat
 from pygments.lexers.sql import SqlLexer
 from prompt_toolkit import PromptSession
 from prompt_toolkit.lexers import PygmentsLexer
@@ -9,9 +8,10 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.styles import style_from_pygments_cls
 from . import HISTORY_FILE, MONOKAI_STYLE
 from .ksqldb import KsqlDBClient, is_stmt
-from .printer import print_stmt
+from .printer import print_stmt, pok, perr
 from .completer import pykli_completer
 from .keybindgings import pykli_keys
+
 
 def cli_loop(server):
     ksqldb = KsqlDBClient(server)
@@ -33,9 +33,9 @@ def cli_loop(server):
             elif text == "quit" or text == "exit":
                 break
         except httpx.HTTPStatusError as e:
-            click.secho(str(e), fg="red")
+            perr(e.response.json()["message"])
         except httpx.TransportError as e:
-            click.secho(f"Transport error: {pformat(e)}", fg="red")
+            perr(f"Transport error: {pformat(e)}")
         except KeyboardInterrupt:
             continue
         except EOFError:

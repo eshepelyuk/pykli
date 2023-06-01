@@ -13,4 +13,7 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 
 ## Supported commands
 
-* `SHOW ...` / `LIST ...` family
+* `SHOW ...` 
+* `LIST ...`
+* `DESCRIBE ...`
+* `DROP ...`
