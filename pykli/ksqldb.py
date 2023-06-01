@@ -17,8 +17,12 @@ class KsqlDBClient:
             b64string = base64.b64encode(bytes(f"{api_key}:{api_secret}"))
             self._headers["Authorization"] = f"Basic {b64string}"
 
-    async def info(self):
-        pass
+
+    def info(self):
+        r = self._client.get("/info", headers=self._headers)
+        r.raise_for_status()
+        return r.json()["KsqlServerInfo"]
+
 
     def stmt(self, ksql_str, stream_props={}):
         body = {

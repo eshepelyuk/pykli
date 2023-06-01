@@ -8,13 +8,12 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.styles import style_from_pygments_cls
 from . import HISTORY_FILE, MONOKAI_STYLE
 from .ksqldb import KsqlDBClient, is_stmt
-from .printer import print_stmt, pok, perr
+from .printer import print_stmt, perr
 from .completer import pykli_completer
 from .keybindgings import pykli_keys
 
 
-def cli_loop(server):
-    ksqldb = KsqlDBClient(server)
+def cli_loop(ksqldb: KsqlDBClient):
 
     session = PromptSession(
         lexer=PygmentsLexer(SqlLexer), style=style_from_pygments_cls(MONOKAI_STYLE),
@@ -41,3 +40,4 @@ def cli_loop(server):
         except EOFError:
             break
 
+    return 0
