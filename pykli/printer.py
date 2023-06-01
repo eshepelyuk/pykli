@@ -56,6 +56,26 @@ KSQL_SHOW_TYPES = {
     ),
 }
 
+
+def format_ksql_type(type_def) -> str:
+    match type_def:
+        case {"type": "KEY", "schema": {"type": "STRING"}}:
+            return "VARCHAR (key)"
+        case {"schema": {"type": "STRING"}}:
+            return "VARCHAR"
+        case {"schema": {"type": "STRUCT", "fields": flds}}:
+            types_str = "\n".join(wrap(', '.join(f['name'] for f in flds), width=70))
+            return f"STRUCT<{types_str}>"
+        case {"type": "KEY", "schema": {"type": tp}}:
+            return f"{tp} (key)"
+        case {"type": "HEADER", "headerKey": hdr, "schema": {"type": tp}}:
+            return f"{tp} (header('{hdr}'))"
+        case {"schema": {"type": tp}}:
+            return tp
+        case _:
+            return pformat(type_def)
+
+
 def print_show(data_type, json):
     if data_type in KSQL_SHOW_TYPES:
         data_extractor, headers, row_extractor = KSQL_SHOW_TYPES[data_type]
@@ -69,6 +89,7 @@ def print_show(data_type, json):
     else:
         click.secho(f"`show` not implemented for: {data_type}", fg="red")
         pprint(json)
+
 
 def print_describe(data):
     def row_extractor(rows):
@@ -89,20 +110,3 @@ def print_stmt(resp):
         else:
             click.secho(f"not implemented: {stmt}", fg="red")
 
-def format_ksql_type(type_def) -> str:
-    match type_def:
-        case {"type": "KEY", "schema": {"type": "STRING"}}:
-            return "VARCHAR (key)"
-        case {"schema": {"type": "STRING"}}:
-            return "VARCHAR"
-        case {"schema": {"type": "STRUCT", "fields": flds}}:
-            types_str = "\n".join(wrap(', '.join(f['name'] for f in flds), width=70))
-            return f"STRUCT<{types_str}>"
-        case {"type": "KEY", "schema": {"type": tp}}:
-            return f"{tp} (key)"
-        case {"type": "HEADER", "headerKey": hdr, "schema": {"type": tp}}:
-            return f"{tp} (header('{hdr}'))"
-        case {"schema": {"type": tp}}:
-            return tp
-        case _:
-            return pformat(type_def)
