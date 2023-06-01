@@ -16,28 +16,28 @@ KSQL_SHOW_TYPES = {
     "connector_list": (
         lambda j : j["connectors"],
         ("Connector Name", "Type", "Class", "Status"),
-        lambda row : ((s["name"], s["type"], s["className"], s["state"]) for s in row)
+        lambda rows : ((r["name"], r["type"], r["className"], r["state"]) for r in rows)
     ),
     "function_names": (
         lambda j : j["functions"],
         ("Function Name", "Category"),
-        lambda row : ((s["name"], s["category"]) for s in row),
+        lambda rows : ((r["name"], r["category"]) for r in rows),
     ),
     "properties": (
-        lambda j : j["properties"],
+        lambda j : sorted(j["properties"], lambda r: r["name"]),
         ("Name", "Scope", "Default override", "Effective Value"),
-        lambda row : ((s["name"], s["scope"], None, s["value"]) for s in row),
+        lambda rows : ((r["name"], r["scope"], None, r["value"]) for r in rows),
     ),
     "queries": (
         lambda j : j["queries"],
         ("Query ID", "Query Type", "Status", "Sink Name", "Sink Kafka Topic", "Query String"),
-        lambda row : ((s["id"], s["queryType"], s["state"], s["sinks"], s["sinkKafkaTopics"],
-                        sqlparse.format(s["queryString"], indent=True)) for s in row),
+        lambda rows : ((r["id"], r["queryType"], r["state"], r["sinks"], r["sinkKafkaTopics"],
+                        sqlparse.format(r["queryString"], indent=True)) for r in rows),
     ),
     "kafka_topics": (
-        lambda j : j["topics"],
+        lambda j : sorted(j["topics"], key=lambda r: r["name"]),
         ("Kafka Topic", "Partitions", "Partition Replicas"),
-        lambda row : ((s["name"], len(s["replicaInfo"]), s["replicaInfo"][0]) for s in row)
+        lambda rows : ((r["name"], len(r["replicaInfo"]), r["replicaInfo"][0]) for r in rows)
     ),
     "streams": (
         lambda j : sorted(j["streams"], key=lambda r: r["name"]),
@@ -102,13 +102,12 @@ def print_show(data_type, json):
 
 
 def print_describe(data):
-    def row_extractor(rows):
-        for r in rows:
-            yield (r["name"], format_ksql_type(r))
+    def row_extractor(rows): return ((r["name"], format_ksql_type(r)) for r in rows)
     ff = format_output(row_extractor(data), DESCRIBE_HEADERS, format_name="psql", preprocessors=(style_output,),
             header_token=Token.String, odd_row_token=None, even_row_token=None,
             style=MONOKAI_STYLE, include_default_pygments_style=False)
     pok("\n".join(ff))
+
 
 def print_stmt(resp):
     for json in resp:
