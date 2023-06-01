@@ -19,6 +19,9 @@ sqlparse = "^0.4.4"
 [tool.poetry.scripts]
 pykli = "pykli.__main__:main"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
