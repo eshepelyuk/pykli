@@ -3,8 +3,9 @@ import httpx
 
 def is_stmt(s):
     return (s.startswith("show") or
-        s.startswith("list") or
-        s.startswith("describe"))
+        s.startswith("list") or s.startswith("describe") or
+        s.startswith("drop")
+        )
 
 class KsqlDBClient:
     def __init__(self, url, api_key=None, api_secret=None):

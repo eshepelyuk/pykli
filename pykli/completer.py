@@ -5,6 +5,12 @@ pykli_completer = NestedCompleter.from_nested_dict({
         "streams": None,
         "tables": None,
     },
+    "drop": {
+        "connector": {"if exists": None},
+        "stream": {"if exists": None},
+        "table": {"if exists": None},
+        "type": {"if exists": None},
+    },
     "list": {
         "connectors": None,
         "functions": None,

@@ -1,6 +1,6 @@
 import click
 import sqlparse
-from pprint import pformat, pprint
+from pprint import pformat
 from textwrap import wrap
 
 from pygments.token import Token
@@ -50,11 +50,22 @@ KSQL_SHOW_TYPES = {
         lambda row : ((s["name"], s["topic"], s["keyFormat"], s["valueFormat"], str(s["isWindowed"])) for s in row)
     ),
     "type_list": (
-        lambda j : j["types"].items(),
+        lambda j : ({"name": nm, "schema": sc} for nm, sc in j["types"].items()),
         ("Name", "Schema"),
-        lambda row : ((s[0], pformat(s[1])) for s in row),
+        lambda rows : ((r["name"], format_ksql_type(r)) for r in rows),
     ),
 }
+
+def pok(text):
+    click.secho(text)
+
+
+def pwarn(text):
+    click.secho(text)
+
+
+def perr(text):
+    click.secho(text, fg="red")
 
 
 def format_ksql_type(type_def) -> str:
@@ -84,11 +95,10 @@ def print_show(data_type, json):
             header_token=Token.String, odd_row_token=None, even_row_token=None,
             style=MONOKAI_STYLE, iinclude_default_pygments_style=False)
 
-        click.secho("\n".join(ff))
-        # click.echo_via_pager("\n".join(ff))
+        pok("\n".join(ff))
     else:
-        click.secho(f"`show` not implemented for: {data_type}", fg="red")
-        pprint(json)
+        perr(f"`show` not implemented for: {data_type}")
+        pok(pformat(json))
 
 
 def print_describe(data):
@@ -98,7 +108,7 @@ def print_describe(data):
     ff = format_output(row_extractor(data), DESCRIBE_HEADERS, format_name="psql", preprocessors=(style_output,),
             header_token=Token.String, odd_row_token=None, even_row_token=None,
             style=MONOKAI_STYLE, include_default_pygments_style=False)
-    click.secho("\n".join(ff))
+    pok("\n".join(ff))
 
 def print_stmt(resp):
     for json in resp:
@@ -107,6 +117,16 @@ def print_stmt(resp):
             print_show(json["@type"], json)
         elif stmt.startswith("describe"):
             print_describe(json["sourceDescription"]["fields"])
+        elif stmt.startswith("drop"):
+            match json:
+                case {'@type': 'drop_connector'}:
+                    click.secho(stmt)
+                case {'@type': 'warning_entity', "message": msg}:
+                    click.secho(msg)
+                case {'@type': "currentStatus", "commandStatus": {"message": msg}}:
+                    click.secho(msg)
+                case _:
+                    pok(pformat(json))
         else:
-            click.secho(f"not implemented: {stmt}", fg="red")
+            perr(f"not implemented: {stmt}")
 
