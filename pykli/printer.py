@@ -40,14 +40,14 @@ KSQL_SHOW_TYPES = {
         lambda row : ((s["name"], len(s["replicaInfo"]), s["replicaInfo"][0]) for s in row)
     ),
     "streams": (
-        lambda j : j["streams"],
+        lambda j : sorted(j["streams"], key=lambda r: r["name"]),
         ("Stream Name", "Kafka Topic", "Key Format", "Value Format", "Windowed"),
-        lambda row : ((s["name"], s["topic"], s["keyFormat"], s["valueFormat"], str(s["isWindowed"])) for s in row)
+        lambda rows : ((r["name"], r["topic"], r["keyFormat"], r["valueFormat"], str(r["isWindowed"])) for r in rows)
     ),
     "tables": (
-        lambda j : j["tables"],
+        lambda j : sorted(j["tables"], key=lambda r: r["name"]),
         ("Table Name", "Kafka Topic", "Key Format", "Value Format", "Windowed"),
-        lambda row : ((s["name"], s["topic"], s["keyFormat"], s["valueFormat"], str(s["isWindowed"])) for s in row)
+        lambda rows : ((r["name"], r["topic"], r["keyFormat"], r["valueFormat"], str(r["isWindowed"])) for r in rows)
     ),
     "type_list": (
         lambda j : ({"name": nm, "schema": sc} for nm, sc in j["types"].items()),
