@@ -2,6 +2,8 @@ from prompt_toolkit.completion import NestedCompleter
 
 pykli_completer = NestedCompleter.from_nested_dict({
     "describe": {
+        "connector": None,
+        "function": None,
         "streams": None,
         "tables": None,
     },
