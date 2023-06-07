@@ -156,7 +156,7 @@ def print_describe_func(data):
 def print_stmt(json_arr):
     for json in json_arr:
         stmt = json["statementText"]
-        if stmt.startswith("show") or stmt.startswith("list"):
+        if stmt.startswith(("show", "list", "SHOW", "LIST")):
             print_show(json["@type"], json)
         elif stmt.startswith("describe"):
             match json:
@@ -171,7 +171,7 @@ def print_stmt(json_arr):
                     print_describe_func(json)
                 case _:
                     pwarn(pformat(json))
-        elif stmt.startswith("drop"):
+        elif stmt.startswith(("drop", "DROP")):
             match json:
                 case {"@type": "drop_connector"}:
                     click.secho(stmt)
@@ -182,5 +182,6 @@ def print_stmt(json_arr):
                 case _:
                     pwarn(pformat(json))
         else:
-            perr(f"not implemented: {stmt}")
+            perr(f"output not yet implemented: {stmt}")
+            pok(pformat(json))
 

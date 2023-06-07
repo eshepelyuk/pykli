@@ -36,4 +36,5 @@ pykli_completer = NestedCompleter.from_nested_dict({
         "variables": None,
     },
     "exit": None,
+    "quit": None,
 })
