@@ -1,5 +1,5 @@
 from pprint import pformat
-from pykli.printer import format_ksql_type
+from pykli.repl_print import format_ksql_type
 
 STRING_COLUMN = {
     'name': 'StrFld',

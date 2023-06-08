@@ -1,8 +1,11 @@
-# pykli
+# pyKLI
 
-ksqlDB command line client written in Python.
+[ksqlDB](https://ksqldb.io/) command line client written in Python.
 
-This project is in a very early stage. Please try and report bugs :)
+This project is in a very early stage. 
+
+Please try and report bugs :)
+
 PRs are welcome.
 
 ## Installation
@@ -15,5 +18,5 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 
 * `SHOW ...` 
 * `LIST ...`
-* `DESCRIBE ...`
+* `DESCRIBE ...`, without `EXTENDED`
 * `DROP ...`

@@ -1,7 +1,7 @@
 from prompt_toolkit.enums import DEFAULT_BUFFER
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import completion_is_selected, is_searching, has_completions, Condition
-from prompt_toolkit.application import get_app, run_in_terminal
+from prompt_toolkit.application import get_app # , run_in_terminal
 
 def _is_complete(sql):
     # A complete command is an sql statement that ends with a semicolon, unless
