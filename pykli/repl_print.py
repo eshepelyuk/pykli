@@ -8,7 +8,7 @@ from pygments.token import Token
 from cli_helpers.tabular_output import format_output
 from cli_helpers.tabular_output.preprocessors import style_output
 
-from . import MONOKAI_STYLE
+from . import MONOKAI_STYLE, LOG
 
 DESCRIBE_SRC_HEADERS = ("Field", "Type")
 
@@ -68,12 +68,14 @@ def pok(text):
     click.secho(text)
 
 
-def pwarn(text):
+def pwarn(text, data=None):
     click.secho(text)
+    LOG.warning(f"{text}, data={pformat(data)}")
 
 
-def perr(text):
+def perr(text, data=None):
     click.secho(text, fg="red")
+    LOG.error(f"{text}, data={pformat(data)}")
 
 
 def format_ksql_type(type_def) -> str:
@@ -105,8 +107,7 @@ def print_show(data_type, json):
 
         pok("\n".join(ff))
     else:
-        pwarn(f"`show` not implemented for: {data_type}")
-        pwarn(pformat(json))
+        pwarn(f"`show` not implemented for: {data_type}", json)
 
 
 def print_describe_src(data):
@@ -160,7 +161,7 @@ def print_stmt(json_arr):
             print_show(json["@type"], json)
         elif stmt.startswith("describe"):
             match json:
-                case {"@type": "source_description", "sourceDescription": data}:
+                case {"@type": "sourceDescription", "sourceDescription": data}:
                     print_describe_src(data)
                 case {"@type": "source_descriptions", "sourceDescriptions": data_arr}:
                     for data in data_arr:
@@ -170,7 +171,7 @@ def print_stmt(json_arr):
                 case {"@type": "describe_function"}:
                     print_describe_func(json)
                 case _:
-                    pwarn(pformat(json))
+                    pwarn(f"unknown format {stmt}", json)
         elif stmt.startswith(("drop", "DROP")):
             match json:
                 case {"@type": "drop_connector"}:
@@ -180,8 +181,7 @@ def print_stmt(json_arr):
                 case {"@type": "currentStatus", "commandStatus": {"message": msg}}:
                     click.secho(msg)
                 case _:
-                    pwarn(pformat(json))
+                    pwarn(f"unknown format {stmt}", json)
         else:
-            perr(f"output not yet implemented: {stmt}")
-            pok(pformat(json))
+            perr(f"output not yet implemented: {stmt}", json)
 
