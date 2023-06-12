@@ -156,32 +156,24 @@ def print_describe_func(data):
 
 def print_stmt(json_arr):
     for json in json_arr:
-        stmt = json["statementText"]
-        if stmt.startswith(("show", "list", "SHOW", "LIST")):
-            print_show(json["@type"], json)
-        elif stmt.startswith("describe"):
-            match json:
-                case {"@type": "sourceDescription", "sourceDescription": data}:
+        match json:
+            case {"@type": tp, "statementText": stmt} if stmt.startswith(("show", "list", "SHOW", "LIST")):
+                print_show(json["@type"], json)
+            case {"@type": "sourceDescription", "sourceDescription": data}:
+                print_describe_src(data)
+            case {"@type": "source_descriptions", "sourceDescriptions": data_arr}:
+                for data in data_arr:
                     print_describe_src(data)
-                case {"@type": "source_descriptions", "sourceDescriptions": data_arr}:
-                    for data in data_arr:
-                        print_describe_src(data)
-                case {"@type": "connector_description"}:
-                    print_describe_conn(json)
-                case {"@type": "describe_function"}:
-                    print_describe_func(json)
-                case _:
-                    pwarn(f"unknown format {stmt}", json)
-        elif stmt.startswith(("drop", "DROP")):
-            match json:
-                case {"@type": "drop_connector"}:
-                    click.secho(stmt)
-                case {"@type": "warning_entity", "message": msg}:
-                    click.secho(msg)
-                case {"@type": "currentStatus", "commandStatus": {"message": msg}}:
-                    click.secho(msg)
-                case _:
-                    pwarn(f"unknown format {stmt}", json)
-        else:
-            perr(f"output not yet implemented: {stmt}", json)
+            case {"@type": "connector_description"}:
+                print_describe_conn(json)
+            case {"@type": "describe_function"}:
+                print_describe_func(json)
+            case {"@type": "drop_connector"}:
+                click.secho(stmt)
+            case {"@type": "warning_entity", "message": msg}:
+                click.secho(msg)
+            case {"@type": "currentStatus", "commandStatus": {"message": msg}}:
+                click.secho(msg)
+            case _:
+                perr(f"output not yet implemented: {stmt}", json)
 
