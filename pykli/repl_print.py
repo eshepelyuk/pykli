@@ -169,11 +169,13 @@ def print_stmt(json_arr):
             case {"@type": "describe_function"}:
                 print_describe_func(json)
             case {"@type": "drop_connector"}:
-                click.secho(stmt)
+                pok(stmt)
             case {"@type": "warning_entity", "message": msg}:
-                click.secho(msg)
+                pok(msg)
             case {"@type": "currentStatus", "commandStatus": {"message": msg}}:
-                click.secho(msg)
+                pok(msg)
+            case {"@type": "connector_info", "info": {"name": nm}}:
+                pok(f"Created connector {nm}")
             case _:
                 perr(f"output not yet implemented: {stmt}", json)
 

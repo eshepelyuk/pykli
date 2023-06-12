@@ -6,6 +6,12 @@ from prompt_toolkit.document import Document
 COMPLETIONS = {
     "create": {
         "type": None,
+        "sink": {
+            "connector": {"if not exists"}
+        },
+        "source": {
+            "connector": {"if not exists"}
+        },
     },
     "describe": {
         "connector": WordCompleter(["conn1", "conn2"]),

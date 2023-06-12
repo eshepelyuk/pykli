@@ -20,4 +20,4 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 * `LIST ...`
 * `DESCRIBE ...`, without `EXTENDED`
 * `DROP ...`
-* `CREATE TYPE`
+* `CREATE TYPE` / `CREATE CONNECTOR`
