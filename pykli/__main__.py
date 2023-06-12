@@ -4,9 +4,15 @@ import click
 from pprint import pformat
 
 from . import LOG
-from .ksqldb import KsqlDBClient, is_stmt
+from .ksqldb import KsqlDBClient
 from .repl_print import print_stmt, perr, pok
 from .repl_read import pykli_prompt
+
+def is_stmt(s):
+    return (s.startswith("show") or
+        s.startswith("list") or s.startswith("describe") or
+        s.startswith("drop") or s.startswith("create type")
+        )
 
 
 def repl(ksqldb: KsqlDBClient):

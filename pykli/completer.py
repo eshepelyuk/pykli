@@ -2,9 +2,11 @@ from prompt_toolkit.completion import NestedCompleter, Completer #, Completion, 
 from prompt_toolkit.completion.word_completer import WordCompleter
 from prompt_toolkit.document import Document
 # from prompt_toolkit.application import get_app, run_in_terminal
-# from typing import Any, Iterable, Mapping, Set, Union
 
 COMPLETIONS = {
+    "create": {
+        "type": None,
+    },
     "describe": {
         "connector": WordCompleter(["conn1", "conn2"]),
         "function": None,
