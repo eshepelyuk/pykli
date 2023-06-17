@@ -1,0 +1,38 @@
+version: '2'
+services:
+  zk:
+    image: zookeeper:latest
+  kafka:
+    image: wurstmeister/kafka:2.13-2.7.0
+    ports: ["9092:9092"]
+    depends_on: ["zk"]
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: IN://kafka:9094,OUT://localhost:9092
+      KAFKA_LISTENERS: OUT://:9092,IN://:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: IN:PLAINTEXT,OUT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: IN
+      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  ksqldb:
+    image: confluentinc/ksqldb-server:latest
+    depends_on: ["kafka"]
+    ports: ["8088:8088"]
+    environment:
+      KSQL_BOOTSTRAP_SERVERS: kafka:9094
+
+      KSQL_CONNECT_GROUP_ID: "ksql-connect-cluster"
+      KSQL_CONNECT_BOOTSTRAP_SERVERS: "kafka:9094"
+
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+      KSQL_CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      KSQL_CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+      KSQL_CONNECT_CONFIG_STORAGE_TOPIC: "ksql-connect-configs"
+      KSQL_CONNECT_OFFSET_STORAGE_TOPIC: "ksql-connect-offsets"
+      KSQL_CONNECT_STATUS_STORAGE_TOPIC: "ksql-connect-statuses"
+
+      KSQL_CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      KSQL_CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      KSQL_CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+

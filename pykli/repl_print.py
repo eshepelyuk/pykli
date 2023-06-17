@@ -79,6 +79,7 @@ def perr(text, data=None):
 
 
 def format_ksql_type(type_def) -> str:
+    LOG.info(f"formatting {pformat(type_def)}")
     match type_def:
         case {"type": "KEY", "schema": {"type": "STRING"}}:
             return "VARCHAR (key)"
