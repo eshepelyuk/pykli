@@ -16,8 +16,9 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 
 ## Supported commands
 
-* `SHOW ...` 
-* `LIST ...`
-* `DESCRIBE ...`, without `EXTENDED`
-* `DROP ...`
-* `CREATE TYPE` / `CREATE CONNECTOR`
+* `SHOW` 
+* `LIST`
+* `DESCRIBE`, without `EXTENDED`
+* `DROP`
+* `CREATE`
+
