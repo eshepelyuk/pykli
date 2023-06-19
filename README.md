@@ -21,4 +21,5 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 * `DESCRIBE`, without `EXTENDED`
 * `DROP`
 * `CREATE`
+* `RUN SCRIPT`
 
