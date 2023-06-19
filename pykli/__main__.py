@@ -2,6 +2,8 @@ import httpx
 import sys
 import click
 from pprint import pformat
+from pathlib import Path
+import sqlparse
 
 from . import LOG
 from .ksqldb import KsqlDBClient
@@ -24,6 +26,18 @@ def repl(ksqldb: KsqlDBClient):
                 resp = ksqldb.stmt(text)
                 LOG.debug(f"SQL={text}, ksqlDB={pformat(resp)}")
                 print_stmt(resp)
+            elif text.startswith(("run script", "RUN SCRIPT")):
+                # pok(pformat(sqlparse.parse(text)[0].tokens))
+
+                file = Path(text[10:-1].strip().strip('"').strip("'"))
+                if not file.exists():
+                    perr(f"File {file} doesn't exist")
+                else:
+                    text = file.read_text()
+                    if is_stmt(text):
+                        resp = ksqldb.stmt(text)
+                        LOG.debug(f"SQL={text}, ksqlDB={pformat(resp)}")
+                        print_stmt(resp)
             elif text == "quit" or text == "exit":
                 break
         except httpx.HTTPStatusError as e:

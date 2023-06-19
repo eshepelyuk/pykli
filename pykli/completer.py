@@ -1,7 +1,8 @@
-from prompt_toolkit.completion import NestedCompleter, Completer #, Completion, CompleteEvent
-from prompt_toolkit.completion.word_completer import WordCompleter
+# from typing import Callable, Iterable
+from prompt_toolkit.completion import WordCompleter, NestedCompleter, Completer#, Completion, CompleteEvent
 from prompt_toolkit.document import Document
 # from prompt_toolkit.application import get_app, run_in_terminal
+
 
 COMPLETIONS = {
     "create": {
@@ -30,6 +31,7 @@ COMPLETIONS = {
     "show": {"connectors", "functions", "properties", "queries", "topics", "streams", "tables", "types", "variables"},
     "exit": None,
     "quit": None,
+    "run script": None,
 }
 
 class PykliCompleter(Completer):
@@ -54,6 +56,8 @@ class PykliCompleter(Completer):
                 yield from completer.get_completions(new_document, complete_event)
 
             yield from ()
+
+
 
 
 def pykli_completer(): return PykliCompleter()
