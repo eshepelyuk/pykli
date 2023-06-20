@@ -12,7 +12,8 @@ from .repl_read import pykli_prompt
 
 def is_stmt(s): return (
     s.startswith(("show", "SHOW", "list", "LIST", "describe", "DESCRIBE")) or
-    s.startswith(("drop", "DROP","create", "CREATE"))
+    s.startswith(("drop", "DROP","create", "CREATE")) or
+    s.startswith(("terminate", "TERMINATE"))
 )
 
 
