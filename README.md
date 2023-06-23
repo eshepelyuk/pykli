@@ -1,12 +1,11 @@
 # pyKLI
 
-[ksqlDB](https://ksqldb.io/) command line client written in Python.
+Interactive [ksqlDB](https://ksqldb.io/) command line client
+with autocompletion and syntax highlighting written in Python.
 
-This project is in a very early stage. 
+This project is in an early preview stage. Please try it and provide your feedback.
 
-Please try and report bugs :)
-
-PRs are welcome.
+PRs and suggestions are welcome.
 
 ## Installation
 
@@ -14,12 +13,25 @@ PRs are welcome.
 pip install -U git+https://github.com/eshepelyuk/pykli@main
 ```
 
-## Supported commands
+## Supported KSQL commands
 
-* `SHOW` 
-* `LIST`
+* `SHOW` / `LIST`
 * `DESCRIBE`, without `EXTENDED`
 * `DROP`
 * `CREATE`
 * `RUN SCRIPT`
 
+## TODO
+
+* Metadata autocompletion
+    * table ans stream names
+    * column names and functions in queries
+    * topic and connector names
+* Full KSQL syntax support with Pygments
+* Configuration file
+* Push queries with `EMIT CHANGES`
+* In-place KSQL editing with default editor
+* Internal help
+* Publish to PyPI
+* Semantic versioning 
+* Output via pager

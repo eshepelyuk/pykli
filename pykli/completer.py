@@ -45,7 +45,7 @@ class PykliCompleter(Completer):
             text = document.current_line_before_cursor.lstrip()
             # stripped_len = len(document.current_line_before_cursor) - len(text)
 
-            first_term = [ln for ln in document.lines if ln][0]
+            first_term = next((ln for ln in document.lines if ln), "")
             completer = self._nested.options.get(first_term)
 
             if completer is not None:
