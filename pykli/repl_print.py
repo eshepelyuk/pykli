@@ -9,6 +9,8 @@ from cli_helpers.tabular_output import format_output
 from cli_helpers.tabular_output.preprocessors import style_output
 
 from . import MONOKAI_STYLE, LOG
+from .tokens import KResponse, ErrorMessage
+
 
 DESCRIBE_SRC_HEADERS = ("Field", "Type")
 
@@ -33,7 +35,7 @@ KSQL_SHOW_TYPES = {
     ),
     "properties": (
         lambda j : sorted(j["properties"], key=lambda r: r["name"]),
-        ("Name", "Scope", "Default override", "Effective Value"),
+        ("Property", "Scope", "Default override", "Effective Value"),
         lambda rows : ((r["name"], r["scope"], None, r["value"]) for r in rows),
     ),
     "queries": (
@@ -59,13 +61,14 @@ KSQL_SHOW_TYPES = {
     ),
     "type_list": (
         lambda j : ({"name": nm, "schema": sc} for nm, sc in j["types"].items()),
-        ("Name", "Schema"),
+        ("Type Name", "Schema"),
         lambda rows : ((r["name"], format_ksql_type(r)) for r in rows),
     ),
 }
 
-def pok(text):
-    click.secho(text)
+
+def pok(data):
+    click.secho(data if isinstance(data, str) else pformat(data))
 
 
 def pwarn(text, data=None):
@@ -123,7 +126,7 @@ def print_describe_conn(data):
     data_rows = [(data["status"]["name"], data["connectorClass"], data["status"]["type"],
         data["status"]["connector"]["state"], data["status"]["connector"]["worker_id"])]
     f1 = format_output(data_rows, DESCRIBE_CONN_HEADERS, format_name="vertical", preprocessors=(style_output,),
-            header_token=Token.String, odd_row_token=None, even_row_token=None, sep_title="Overview",
+            header_token=Token.String, odd_row_token=None, even_row_token=None, sep_title="Connector Overview",
             style=MONOKAI_STYLE, include_default_pygments_style=False)
     pok("\n".join(f1))
 
@@ -149,7 +152,7 @@ def print_func_variations(func_name, func_arr):
 def print_describe_func(data):
     data_rows = [(data["name"], data["author"], data["version"], data["description"], data["type"], data["path"])]
     ff = format_output(data_rows, DESCRIBE_FUNC_HEADERS, format_name="vertical", preprocessors=(style_output,),
-            header_token=Token.String, odd_row_token=None, even_row_token=None, sep_title="Overview",
+            header_token=Token.String, odd_row_token=None, even_row_token=None, sep_title="Function Overview",
             style=MONOKAI_STYLE, include_default_pygments_style=False)
     pok("\n".join(ff))
     print_func_variations(data["name"], data["functions"])
@@ -177,6 +180,18 @@ def print_stmt(json_arr):
                 pok(msg)
             case {"@type": "connector_info", "info": {"name": nm}}:
                 pok(f"Created connector {nm}")
+            case {"@type": "info", "server": server, "version": version, "serverStatus": status}:
+                pok(f"Connected to {server}, version: {version}, status: {status}")
             case _:
-                perr(f"output not yet implemented: {stmt}", json)
+                perr(f"output not yet implemented:\n{pformat(json)}")
 
+
+def pykli_print(token):
+    match token:
+        case KResponse(resp):
+            print_stmt(resp)
+        case ErrorMessage(msg):
+            perr(msg)
+        case _:
+            perr(f"output not implemented: {token}")
+    return token
