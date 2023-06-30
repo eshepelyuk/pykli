@@ -9,7 +9,7 @@ from cli_helpers.tabular_output import format_output
 from cli_helpers.tabular_output.preprocessors import style_output
 
 from . import MONOKAI_STYLE, LOG
-from .tokens import KResponse, ErrorMessage
+from .tokens import KResponse, ErrorMessage, QueryResponse
 
 
 DESCRIBE_SRC_HEADERS = ("Field", "Type")
@@ -183,13 +183,26 @@ def print_stmt(json_arr):
             case {"@type": "info", "server": server, "version": version, "serverStatus": status}:
                 pok(f"Connected to {server}, version: {version}, status: {status}")
             case _:
-                perr(f"output not yet implemented:\n{pformat(json)}")
+                perr("output not yet implemented")
+                pok(json)
+
+
+def print_query(json_arr):
+    headers = json_arr[0]["columnNames"]
+    data_rows = json_arr[1:]
+
+    f1 = format_output(data_rows, headers, format_name="psql", preprocessors=(style_output,),
+            header_token=Token.String, odd_row_token=None, even_row_token=None,
+            style=MONOKAI_STYLE, include_default_pygments_style=False)
+    pok("\n".join(f1))
 
 
 def pykli_print(token):
     match token:
         case KResponse(resp):
             print_stmt(resp)
+        case QueryResponse(resp):
+            print_query(resp)
         case ErrorMessage(msg):
             perr(msg)
         case _:

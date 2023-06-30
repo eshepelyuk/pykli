@@ -28,3 +28,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 140
+
+[tool.pytest.ini_options]
+markers = [
+    "e2e: e2e tests",
+]

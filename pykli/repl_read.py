@@ -5,14 +5,15 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.styles import style_from_pygments_cls
 from prompt_toolkit import PromptSession
 
+from pprint import pformat
 from pathlib import Path
-from sqlparse.tokens import DML, String, Keyword
+from sqlparse.tokens import DML, DDL, String, Keyword
 import sqlparse
 
-from . import MONOKAI_STYLE, HISTORY_FILE
+from . import MONOKAI_STYLE, HISTORY_FILE, LOG
 from .completer import pykli_completer
 from .keybindgings import pykli_keys
-from .tokens import KStmt, ErrorMessage, KRunScript
+from .tokens import Stmt, ErrorMessage, KRunScript, PullQuery
 
 
 class pykli_prompt:
@@ -38,16 +39,6 @@ class pykli_prompt:
             return "exit"
 
 
-def tokenize_sql_stmt(stmt):
-    kw = stmt.token_first()
-    if kw.ttype == Keyword and kw.ttype is not DML:
-        yield KStmt(stmt.value)
-    elif kw.ttype is KRunScript:
-        yield from tokenize_script(stmt)
-    else:
-        yield stmt
-
-
 def tokenize_script(stmt):
     _, path_token = stmt.token_next(0)
     if path_token.ttype is String.Single:
@@ -59,6 +50,24 @@ def tokenize_script(stmt):
             yield ErrorMessage(f"'{path}' not found")
     else:
         yield ErrorMessage(f"syntax error: {stmt}")
+
+
+def tokenize_sql_stmt(stmt):
+    kw = stmt.token_first()
+
+    # stmt._pprint_tree()
+
+    LOG.debug(f"tokenize_sql_stmt: stmt=<{stmt}>, first_token={pformat(kw)}")
+    if kw.ttype == Keyword or kw.ttype == DDL:
+        yield Stmt(stmt.value)
+    elif kw.match(DML, "insert"):
+        yield Stmt(stmt.value)
+    elif kw.match(DML, "select") and "emit changes" not in stmt.value.lower():
+        yield PullQuery(stmt.value)
+    elif kw.ttype is KRunScript:
+        yield from tokenize_script(stmt)
+    else:
+        yield stmt
 
 
 def pykli_read(prompt):

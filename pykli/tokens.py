@@ -4,16 +4,19 @@ from sqlparse import keywords
 from sqlparse.lexer import Lexer
 from sqlparse.tokens import Keyword
 
-class KStmt(NamedTuple):
+class Stmt(NamedTuple):
     ksql: str
 
-class KQuery(NamedTuple):
+class PullQuery(NamedTuple):
     ksql: str
+
+class QueryResponse(NamedTuple):
+    val: dict
 
 class KResponse(NamedTuple):
     val: dict
 
-class KInfo(NamedTuple):
+class Info(NamedTuple):
     srv: str
 
 class ErrorMessage(NamedTuple):

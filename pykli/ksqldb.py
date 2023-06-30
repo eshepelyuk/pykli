@@ -23,8 +23,20 @@ class KsqlDBClient:
         body = {
             "ksql": ksql_str,
             "streamsProperties": stream_props,
+            "sessionVariables": {},
         }
         r = self._client.post("/ksql", json=body, headers=self._headers)
+        r.raise_for_status()
+        return r.json()
+
+    def pull_query(self, ksql_str, stream_props={}):
+        body = {
+            "sql": ksql_str,
+            "streamsProperties": stream_props,
+            "sessionVariables": {},
+        }
+        headers = {"Accept": "application/json"}
+        r = self._client.post("/query-stream", json=body, headers=headers)
         r.raise_for_status()
         return r.json()
 

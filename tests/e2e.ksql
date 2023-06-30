@@ -1,0 +1,18 @@
+create or replace stream pykli_json (
+  id varchar key, `firstName` varchar, "Age" int
+) with (kafka_topic = 'pykli_json', partitions = 1, value_format = 'json');
+
+show streams;
+show topics;
+
+insert into pykli_json (id, `firstName`, `Age`) values ('uuid1', 'Tom', 20);
+insert into pykli_json (id, `firstName`, `Age`) values ('uuid2', 'Fred', 30);
+insert into pykli_json (id, `firstName`, `Age`) values ('uuid3', 'Bob', 40);
+
+select * from pykli_json where `firstName` = 'Tom';
+select * from pykli_json where `Age` > 20;
+
+drop stream pykli_json delete topic;
+
+show streams;
+show topics;
