@@ -6,6 +6,15 @@ from prompt_toolkit.document import Document
 
 COMPLETIONS = {
     "create": {
+        "or": {
+            "replace": {
+                "table": None,
+                "stream": {"if not exists"},
+                "source stream": {"if not exists"},
+            },
+        },
+        "stream": None,
+        "source stream": None,
         "type": None,
         "sink": {
             "connector": {"if not exists"}
@@ -27,11 +36,13 @@ COMPLETIONS = {
         "table": {"if exists": None},
         "type": {"if exists": None},
     },
+    "insert into": None,
     "list": {"connectors", "functions", "properties", "queries", "topics", "streams", "tables", "types", "variables"},
     "show": {"connectors", "functions", "properties", "queries", "topics", "streams", "tables", "types", "variables"},
     "exit": None,
     "quit": None,
     "run script": None,
+    "terminate": None,
 }
 
 class PykliCompleter(Completer):
