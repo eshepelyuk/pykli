@@ -19,4 +19,4 @@ run srv="http://localhost:28088":
 
 ksqldb-cli srv="http://host.docker.internal:28088":
   docker run -it --rm --add-host=ksqldb:host-gateway \
-    confluentinc/ksqldb-cli:0.28.2 ksql {{srv}}
+    confluentinc/ksqldb-cli:0.29.0 ksql {{srv}}
