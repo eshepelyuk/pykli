@@ -15,11 +15,14 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 
 ## Supported KSQL commands
 
-* `SHOW` / `LIST`
+* `SHOW`, `LIST`
 * `DESCRIBE`, without `EXTENDED`
 * `DROP`
 * `CREATE`
 * `RUN SCRIPT`
+* `TERMINATE`
+* `SELECT`  for Pull queries
+* `INSERT` for values
 
 ## TODO
 
@@ -29,7 +32,7 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
     * topic and connector names
 * Full KSQL syntax support with Pygments
 * Configuration file
-* Push queries with `EMIT CHANGES`
+* Push queries, i.e. with `EMIT CHANGES`
 * In-place KSQL editing with default editor
 * Internal help
 * Publish to PyPI
