@@ -5,7 +5,7 @@ from .ksqldb import KsqlDBClient
 from .repl_read import pykli_prompt, pykli_read
 from .repl_eval import pykli_eval
 from .repl_print import pykli_print
-from .tokens import KInfo, ErrorMessage, initialize_sqlparse
+from .tokens import Info, ErrorMessage, initialize_sqlparse
 
 
 @click.command()
@@ -22,7 +22,7 @@ def main(server):
 
     eval = pykli_eval(KsqlDBClient(server))
 
-    if isinstance(pykli_print(eval(KInfo(server))), ErrorMessage):
+    if isinstance(pykli_print(eval(Info(server))), ErrorMessage):
         sys.exit(1)
 
     for token in pykli_read(pykli_prompt()):

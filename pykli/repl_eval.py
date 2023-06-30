@@ -1,5 +1,5 @@
 from . import LOG
-from .tokens import KStmt, ErrorMessage, KResponse, KInfo
+from .tokens import Stmt, ErrorMessage, KResponse, Info, PullQuery, QueryResponse
 
 import httpx
 from pprint import pformat
@@ -10,14 +10,19 @@ class pykli_eval:
 
     def __call__(self, token):
         try:
+            LOG.debug(f"pykli_eval: token={token}")
             match token:
-                case KInfo(srv):
+                case Info(srv):
                     info = self._ksqldb.info()
                     return KResponse([info | {"@type": "info", "server": srv}])
-                case KStmt(val):
-                    resp = self._ksqldb.stmt(val)
-                    LOG.debug(f"KSQL={val}, response={pformat(resp)}")
+                case Stmt(ksql):
+                    resp = self._ksqldb.stmt(ksql)
+                    LOG.debug(f"KSQL={ksql}, response={pformat(resp)}")
                     return KResponse(resp)
+                case PullQuery(ksql):
+                    resp = self._ksqldb.pull_query(ksql)
+                    LOG.debug(f"KSQL={ksql}, response={pformat(resp)}")
+                    return QueryResponse(resp)
                 case ErrorMessage():
                     return token
                 case _:
