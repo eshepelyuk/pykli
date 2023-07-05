@@ -4,6 +4,8 @@ from sqlparse import keywords
 from sqlparse.lexer import Lexer
 from sqlparse.tokens import Keyword
 
+from . import LOG
+
 class Stmt(NamedTuple):
     ksql: str
 
@@ -13,13 +15,13 @@ class PullQuery(NamedTuple):
 class QueryResponse(NamedTuple):
     val: dict
 
-class KResponse(NamedTuple):
+class StmtResponse(NamedTuple):
     val: dict
 
 class Info(NamedTuple):
     srv: str
 
-class ErrorMessage(NamedTuple):
+class ErrMsg(NamedTuple):
     msg: str
 
 KRunScript = Keyword.KRunScript
@@ -38,3 +40,5 @@ def initialize_sqlparse():
     lex.add_keywords(keywords.KEYWORDS)
 
     lex.add_keywords({"DEFINE": Keyword.KDefine})
+
+    LOG.info("initialize_sqlparse done")

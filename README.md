@@ -26,6 +26,7 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 
 ## TODO
 
+* Session wide variables with `DEFINE`
 * Metadata autocompletion
     * table ans stream names
     * column names and functions in queries

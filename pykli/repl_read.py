@@ -13,7 +13,20 @@ import sqlparse
 from . import MONOKAI_STYLE, HISTORY_FILE, LOG
 from .completer import pykli_completer
 from .keybindgings import pykli_keys
-from .tokens import Stmt, ErrorMessage, KRunScript, PullQuery
+from .tokens import Stmt, ErrMsg, KRunScript, PullQuery
+
+
+class file_prompt:
+    def __init__(self, path):
+        self._path = path
+
+    def __call__(self):
+        if  self._path:
+            ksql = self._path.read_text()
+            self._path = None
+            return ksql
+
+        return "exit"
 
 
 class pykli_prompt:
@@ -47,9 +60,9 @@ def tokenize_script(stmt):
             for stmt in sqlparse.parse(path.read_text()):
                 yield from tokenize_sql_stmt(stmt)
         else:
-            yield ErrorMessage(f"'{path}' not found")
+            yield ErrMsg(f"'{path}' not found")
     else:
-        yield ErrorMessage(f"syntax error: {stmt}")
+        yield ErrMsg(f"syntax error: {stmt}")
 
 
 def tokenize_sql_stmt(stmt):

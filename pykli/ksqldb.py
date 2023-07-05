@@ -5,12 +5,18 @@ import httpx
 class KsqlDBClient:
     def __init__(self, url, api_key=None, api_secret=None):
         # TODO introduce common headers
+        self._url = url
         self._headers = {"Content-Type": "application/vnd.ksql.v1+json"}
         self._client = httpx.Client(base_url=url, http2=True)
 
         if api_key and api_secret:
             b64string = base64.b64encode(bytes(f"{api_key}:{api_secret}"))
             self._headers["Authorization"] = f"Basic {b64string}"
+
+
+    @property
+    def url(self):
+        return self._url
 
 
     def info(self):
@@ -39,6 +45,31 @@ class KsqlDBClient:
         r = self._client.post("/query-stream", json=body, headers=headers)
         r.raise_for_status()
         return r.json()
+
+
+    def list_topic_names(self) -> list[str]:
+        json = self.stmt("show topics;")[0]
+        return [t["name"] for t in json["topics"]]
+
+
+    def list_stream_names(self) -> list[str]:
+        json = self.stmt("show streams;")[0]
+        return [t["name"] for t in json["streams"]]
+
+
+    def list_type_names(self) -> list[str]:
+        json = self.stmt("show types;")[0]
+        return json["types"].keys()
+
+
+    def list_table_names(self) -> list[str]:
+        json = self.stmt("show tables;")[0]
+        return [t["name"] for t in json["tables"]]
+
+
+    def list_connector_names(self) -> list[str]:
+        json = self.stmt("show connectors;")[0]
+        return [t["name"] for t in json["connectors"]]
 
     # async def query_async(self, query_string, stream_properties=None, timeout=10):
     #     async for x in self.api.query(
