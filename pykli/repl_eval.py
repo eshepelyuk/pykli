@@ -1,5 +1,5 @@
 from . import LOG
-from .tokens import Stmt, ErrorMessage, KResponse, Info, PullQuery, QueryResponse
+from .tokens import Stmt, ErrMsg, StmtResponse, Info, PullQuery, QueryResponse
 
 import httpx
 from pprint import pformat
@@ -14,20 +14,20 @@ class pykli_eval:
             match token:
                 case Info(srv):
                     info = self._ksqldb.info()
-                    return KResponse([info | {"@type": "info", "server": srv}])
+                    return StmtResponse([info | {"@type": "info", "server": srv}])
                 case Stmt(ksql):
                     resp = self._ksqldb.stmt(ksql)
                     LOG.debug(f"KSQL={ksql}, response={pformat(resp)}")
-                    return KResponse(resp)
+                    return StmtResponse(resp)
                 case PullQuery(ksql):
                     resp = self._ksqldb.pull_query(ksql)
                     LOG.debug(f"KSQL={ksql}, response={pformat(resp)}")
                     return QueryResponse(resp)
-                case ErrorMessage():
+                case ErrMsg():
                     return token
                 case _:
-                    return ErrorMessage(f"not yet implemented: {token}")
+                    return ErrMsg(f"not yet implemented: {token}")
         except httpx.HTTPStatusError as e:
-            return ErrorMessage(e.response.json()["message"])
+            return ErrMsg(e.response.json()["message"])
         except httpx.TransportError as e:
-            return ErrorMessage(f"Transport error: {pformat(e)}")
+            return ErrMsg(f"Transport error: {pformat(e)}")

@@ -9,7 +9,7 @@ from cli_helpers.tabular_output import format_output
 from cli_helpers.tabular_output.preprocessors import style_output
 
 from . import MONOKAI_STYLE, LOG
-from .tokens import KResponse, ErrorMessage, QueryResponse
+from .tokens import StmtResponse, ErrMsg, QueryResponse
 
 
 DESCRIBE_SRC_HEADERS = ("Field", "Type")
@@ -199,11 +199,11 @@ def print_query(json_arr):
 
 def pykli_print(token):
     match token:
-        case KResponse(resp):
+        case StmtResponse(resp):
             print_stmt(resp)
         case QueryResponse(resp):
             print_query(resp)
-        case ErrorMessage(msg):
+        case ErrMsg(msg):
             perr(msg)
         case _:
             perr(f"output not implemented: {token}")
