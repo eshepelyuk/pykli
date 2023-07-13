@@ -1,50 +1,35 @@
-from pykli.repl_print import pok
-from pprint import pformat, pprint
-
-from sqlparse.tokens import String, Keyword
 import sqlparse
+import pytest
 
-from pathlib import Path
-
-
-def test_sqlparse2():
-    sql = """ exit ;  select * from qwe ;  select qwe from asd;  update qwe set as=2;"""
-    stmts = [s.strip() for s in sqlparse.split(sql)]
-    pok(f"found {len(stmts)} statements:\n")
-
-    for s in stmts:
-        pok(f"===>>> {s}")
-
-        p = sqlparse.parse(s)[0]
-        p._pprint_tree()
-
-        t1 = p.token_first()
-        pok(t1)
+from pykli.tokens import initialize_sqlparse, SessionVar
+from pykli.repl_read import tokenize_sql_stmt
 
 
-# sql = """RUN   SCRIPT   '/qwe/asd/asd.ksql';define zzz='zzz';DEFINE ttt='ttt';"""
-def test_sqlparse_run_script():
-    sql = """  RUN   SCRIPT   '/qwe/asd/asd.ksql';   run SCRIPT   '/tmp/555/file.ksql';"""
-    stmts = [s.strip() for s in sqlparse.split(sql)]
-    pok(f"found {len(stmts)} statements:\n")
+@pytest.fixture(scope="module", autouse=True)
+def ksqldb_mock():
+    initialize_sqlparse()
 
-    for s in stmts:
-        print(f"===>>> {s}")
 
-        p = sqlparse.parse(s)[0]
-        p._pprint_tree()
+@pytest.mark.parametrize("ksql", [
+    ("define my_var = 'my_val';"),
+    ("  define   my_var  =  'my_val';"),
+])
+def test_tokenize_sql_stmt_define(ksql):
+    stmt = sqlparse.parse(ksql)[0]
+    t = next(tokenize_sql_stmt(stmt))
+    assert isinstance(t, SessionVar)
+    assert t.name == "my_var"
+    assert t.val == "my_val"
 
-        t1 = p.token_first()
-        _, t2 = p.token_next(0)
 
-        pok(t1)
-        pok(f"{t1}")
-        # pok(f"{t1.ttype} -> @{t1.value}@")
-        # pok(t1.match(Keyword, (r"run\s+script\b",), regex=True))
+@pytest.mark.parametrize("ksql", [
+    ("undefine my_var;"),
+    ("  undefine   my_var ; "),
+])
+def test_tokenize_sql_stmt_undefine(ksql):
+    stmt = sqlparse.parse(ksql)[0]
+    t = next(tokenize_sql_stmt(stmt))
+    assert isinstance(t, SessionVar)
+    assert t.name == "my_var"
+    assert t.val is None
 
-        # pok(f"{t2.ttype} -> {t2}")
-        # pok(f"{t2.ttype is String.Single}")
-        # pok(pformat(Path(t2.value.strip("'"))))
-        # pok(Path(t2.value.strip("'")).exists())
-
-# sql = """RUN   SCRIPT   '/qwe/asd/asd.ksql';define zzz='zzz';DEFINE ttt='ttt';"""

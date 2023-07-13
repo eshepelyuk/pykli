@@ -8,12 +8,13 @@ from prompt_toolkit import PromptSession
 from pprint import pformat
 from pathlib import Path
 from sqlparse.tokens import DML, DDL, String, Keyword
+from sqlparse.sql import Comparison, Identifier
 import sqlparse
 
 from . import MONOKAI_STYLE, HISTORY_FILE, LOG
 from .completer import pykli_completer
 from .keybindgings import pykli_keys
-from .tokens import Stmt, ErrMsg, KRunScript, PullQuery
+from .tokens import KSQL, Stmt, ErrMsg, KRunScript, PullQuery, SessionVar
 
 
 class file_prompt:
@@ -68,8 +69,6 @@ def tokenize_script(stmt):
 def tokenize_sql_stmt(stmt):
     kw = stmt.token_first()
 
-    # stmt._pprint_tree()
-
     LOG.debug(f"tokenize_sql_stmt: stmt=<{stmt}>, first_token={pformat(kw)}")
     if kw.ttype == Keyword or kw.ttype == DDL:
         yield Stmt(stmt.value)
@@ -79,6 +78,14 @@ def tokenize_sql_stmt(stmt):
         yield PullQuery(stmt.value)
     elif kw.ttype is KRunScript:
         yield from tokenize_script(stmt)
+    elif kw.ttype is KSQL.Define:
+        _, cmp = stmt.token_next(stmt.token_index(kw))
+        if isinstance(cmp, Comparison) and cmp.right.ttype is String.Single:
+            yield SessionVar(cmp.left.value, cmp.right.value.strip("'"))
+    elif kw.ttype is KSQL.Undefine:
+        _, id = stmt.token_next(stmt.token_index(kw))
+        if isinstance(id, Identifier):
+            yield SessionVar(id.value, None)
     else:
         yield stmt
 

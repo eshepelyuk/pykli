@@ -6,27 +6,39 @@ from sqlparse.tokens import Keyword
 
 from . import LOG
 
+
 class Stmt(NamedTuple):
     ksql: str
+
 
 class PullQuery(NamedTuple):
     ksql: str
 
+
 class QueryResponse(NamedTuple):
     val: dict
+
 
 class StmtResponse(NamedTuple):
     val: dict
 
+
 class Info(NamedTuple):
     srv: str
+
 
 class ErrMsg(NamedTuple):
     msg: str
 
+
+class SessionVar(NamedTuple):
+    name: str
+    val: str | None
+
+
 KRunScript = Keyword.KRunScript
 
-KDefine = Keyword.KDefine
+KSQL = Keyword.KSQL
 
 def initialize_sqlparse():
     lex = Lexer.get_default_instance()
@@ -39,6 +51,7 @@ def initialize_sqlparse():
     lex.add_keywords(keywords.KEYWORDS_COMMON)
     lex.add_keywords(keywords.KEYWORDS)
 
-    lex.add_keywords({"DEFINE": Keyword.KDefine})
+    lex.add_keywords({"DEFINE": KSQL.Define})
+    lex.add_keywords({"UNDEFINE": KSQL.Undefine})
 
     LOG.info("initialize_sqlparse done")

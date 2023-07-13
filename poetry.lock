@@ -279,21 +279,21 @@ pluggy = ">=0.12,<2.0"
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
-name = "pytest-env"
-version = "0.8.2"
-description = "py.test plugin that allows you to add environment variables."
+name = "pytest-mock"
+version = "3.11.1"
+description = "Thin-wrapper around the mock package for easier use with pytest"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pytest_env-0.8.2-py3-none-any.whl", hash = "sha256:5e533273f4d9e6a41c3a3120e0c7944aae5674fa773b329f00a5eb1f23c53a38"},
-    {file = "pytest_env-0.8.2.tar.gz", hash = "sha256:baed9b3b6bae77bd75b9238e0ed1ee6903a42806ae9d6aeffb8754cd5584d4ff"},
+    {file = "pytest-mock-3.11.1.tar.gz", hash = "sha256:7f6b125602ac6d743e523ae0bfa71e1a697a2f5534064528c6ff84c2f7c2fc7f"},
+    {file = "pytest_mock-3.11.1-py3-none-any.whl", hash = "sha256:21c279fff83d70763b05f8874cc9cfb3fcacd6d354247a976f9529d19f9acf39"},
 ]
 
 [package.dependencies]
-pytest = ">=7.3.1"
+pytest = ">=5.0"
 
 [package.extras]
-test = ["coverage (>=7.2.7)", "pytest-mock (>=3.10)"]
+dev = ["pre-commit", "pytest-asyncio", "tox"]
 
 [[package]]
 name = "six"
@@ -375,4 +375,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "389fe3daf35aaaf1e6f9f86f6c2b5107e12b35f3eab259b3bd1565d0d847a930"
+content-hash = "19f0b589570acd55a5e6beacaacf9c33c3abb3dc4020733c1619a55f6198de9b"

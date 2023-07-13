@@ -1,37 +1,12 @@
-from pprint import pformat, pprint
 import pytest
-import httpx
-from time import sleep
 from click.testing import CliRunner
-from pykli.ksqldb import KsqlDBClient
-from pykli.__main__ import main
 
 from prompt_toolkit.application import create_app_session
 from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 
-
-@pytest.fixture(scope="module")
-def ksqldb_url():
-    return "http://localhost:28088"
-
-
-@pytest.fixture(scope="module")
-def ksqldb(ksqldb_url):
-    ksqldb = KsqlDBClient(ksqldb_url)
-    for i in range(5):
-        try:
-            ksqldb.stmt("""
-drop stream if exists pykli_stream_json delete topic;
-drop type if exists pykli_type;
-drop connector if exists pykli_connector;
-""")
-            return ksqldb
-        except httpx.HTTPError:
-            print(f"Waiting for KsqlDB #{i}, {i * 10} sec")
-            sleep(10)
-    raise RuntimeError(f"{ksqldb_url} unavailable")
-
+from pykli.__main__ import main
+from .conftest import list_type_names, list_topic_names, list_stream_names, list_connector_names
 
 @pytest.fixture(scope="function")
 def mock_input():
@@ -42,7 +17,6 @@ def mock_input():
 
 @pytest.mark.e2e
 def test_streams(mock_input, ksqldb):
-
     mock_input.send_text("""
 create or replace stream pykli_stream_json (
     id varchar key, `firstName` varchar, "Age" int
@@ -75,8 +49,8 @@ exit;
     assert "| Kafka Topic                 | Partitions | Partition Replicas |" in output
     assert "| pykli_stream_json           |          1 |                  1 |" in output
 
-    assert "pykli_stream_json" in ksqldb.list_topic_names()
-    assert "PYKLI_STREAM_JSON" in ksqldb.list_stream_names()
+    assert "pykli_stream_json" in list_topic_names(ksqldb)
+    assert "PYKLI_STREAM_JSON" in list_stream_names(ksqldb)
 
     mock_input.send_text("""
 drop stream pykli_stream_json delete topic;
@@ -88,8 +62,8 @@ exit;
     assert r.exit_code == 0
     assert "Source `PYKLI_STREAM_JSON` (topic: pykli_stream_json) was dropped." in r.output
 
-    assert "pykli_stream_json" not in ksqldb.list_topic_names()
-    assert "PYKLI_STREAM_JSON" not in ksqldb.list_stream_names()
+    assert "pykli_stream_json" not in list_topic_names(ksqldb)
+    assert "PYKLI_STREAM_JSON" not in list_stream_names(ksqldb)
 
 
 @pytest.mark.e2e
@@ -105,7 +79,7 @@ exit;
 
     assert r.exit_code == 0
     assert "Registered custom type with name 'PYKLI_TYPE'" in r.output
-    assert "PYKLI_TYPE" in ksqldb.list_type_names()
+    assert "PYKLI_TYPE" in list_type_names(ksqldb)
 
     mock_input.send_text("""
 drop type if exists pykli_type;
@@ -116,7 +90,7 @@ exit;
 
     assert r.exit_code == 0
     assert "Dropped type 'PYKLI_TYPE'" in r.output
-    assert "PYKLI_TYPE" not in ksqldb.list_type_names()
+    assert "PYKLI_TYPE" not in list_type_names(ksqldb)
 
 
 @pytest.mark.e2e
@@ -166,8 +140,8 @@ exit;
     assert "Task ID" in r.output
     assert "RUNNING" in r.output
 
-    assert "PYKLI_CONNECTOR" in ksqldb.list_connector_names()
-    assert "pykli_connector" in ksqldb.list_topic_names()
+    assert "PYKLI_CONNECTOR" in list_connector_names(ksqldb)
+    assert "pykli_connector" in list_topic_names(ksqldb)
 
     mock_input.send_text("""
 drop connector if exists pykli_connector;
@@ -176,7 +150,7 @@ exit;
 
     r = runner.invoke(main, [ksqldb.url])
     assert r.exit_code == 0
-    assert "PYKLI_CONNECTOR" not in ksqldb.list_connector_names()
+    assert "PYKLI_CONNECTOR" not in list_connector_names(ksqldb)
 
 
 @pytest.mark.skip
@@ -206,8 +180,8 @@ exit;
     assert output.count("| uuid1 | Tom       |  20 |") == 1
     assert output.count("| uuid2 | Fred      |  30 |") == 1
 
-    assert "pykli_json" in ksqldb.list_topic_names()
-    assert "PYKLI_JSON" in ksqldb.list_stream_names()
+    assert "pykli_json" in list_topic_names(ksqldb)
+    assert "PYKLI_JSON" in list_stream_names(ksqldb)
 
     mock_input.send_text("""
 drop stream pykli_json delete topic;
@@ -219,5 +193,5 @@ exit;
     assert r.exit_code == 0
     assert "Source `PYKLI_JSON` (topic: pykli_json) was dropped." in r.output
 
-    assert "pykli_json" not in ksqldb.list_topic_names()
-    assert "PYKLI_JSON" not in ksqldb.list_stream_names()
+    assert "pykli_json" not in list_topic_names(ksqldb)
+    assert "PYKLI_JSON" not in list_tlist_stream_names(ksqldb)

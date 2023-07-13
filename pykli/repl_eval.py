@@ -1,14 +1,16 @@
-from . import LOG
-from .tokens import Stmt, ErrMsg, StmtResponse, Info, PullQuery, QueryResponse
-
 import httpx
 from pprint import pformat
+
+from . import LOG
+from .tokens import Stmt, ErrMsg, StmtResponse, Info, PullQuery, QueryResponse, SessionVar
+
 
 class pykli_eval:
     def __init__(self, ksqldb):
         self._ksqldb = ksqldb
 
-    def __call__(self, token):
+
+    def __call__(self, token) -> StmtResponse | QueryResponse | ErrMsg | None:
         try:
             LOG.debug(f"pykli_eval: token={token}")
             match token:
@@ -25,6 +27,12 @@ class pykli_eval:
                     return QueryResponse(resp)
                 case ErrMsg():
                     return token
+                case SessionVar(nm, val):
+                    if val is not None:
+                        self._ksqldb.define(nm, val)
+                    else:
+                        self._ksqldb.undefine(nm)
+                    return None
                 case _:
                     return ErrMsg(f"not yet implemented: {token}")
         except httpx.HTTPStatusError as e:
