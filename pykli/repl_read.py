@@ -53,23 +53,23 @@ class pykli_prompt:
             return "exit"
 
 
-def tokenize_script(stmt):
+def tokenize_run_script(stmt):
     _, path_token = stmt.token_next(0)
     if path_token.ttype is String.Single:
         path = Path(path_token.value.strip("'"))
         if path.exists():
             for stmt in sqlparse.parse(path.read_text()):
-                yield from tokenize_sql_stmt(stmt)
+                yield from tokenize_ksql(stmt)
         else:
             yield ErrMsg(f"'{path}' not found")
     else:
         yield ErrMsg(f"syntax error: {stmt}")
 
 
-def tokenize_sql_stmt(stmt):
+def tokenize_ksql(stmt):
     kw = stmt.token_first()
 
-    LOG.debug(f"tokenize_sql_stmt: stmt=<{stmt}>, first_token={pformat(kw)}")
+    LOG.debug(f"tokenize_ksql: stmt=<{stmt}>, first_token={pformat(kw)}")
     if kw.ttype == Keyword or kw.ttype == DDL:
         yield Stmt(stmt.value)
     elif kw.match(DML, "insert"):
@@ -77,7 +77,7 @@ def tokenize_sql_stmt(stmt):
     elif kw.match(DML, "select") and "emit changes" not in stmt.value.lower():
         yield PullQuery(stmt.value)
     elif kw.ttype is KRunScript:
-        yield from tokenize_script(stmt)
+        yield from tokenize_run_script(stmt)
     elif kw.ttype is KSQL.Define:
         _, cmp = stmt.token_next(stmt.token_index(kw))
         if isinstance(cmp, Comparison) and cmp.right.ttype is String.Single:
@@ -91,12 +91,10 @@ def tokenize_sql_stmt(stmt):
 
 
 def pykli_read(prompt):
-    has_next = True
-    while has_next:
+    while True:
         for stmt in sqlparse.parse(prompt()):
             if stmt.value.startswith(("quit", "exit")):
-                has_next = False
-                break
+                return
             else:
-                yield from tokenize_sql_stmt(stmt)
+                yield from tokenize_ksql(stmt)
 
