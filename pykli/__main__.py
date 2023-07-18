@@ -30,8 +30,9 @@ def main(server, file):
     if isinstance(pykli_print(eval(Info(server))), ErrMsg):
         sys.exit(1)
 
-    for token in pykli_read(prompt):
-        pykli_print(eval(token))
+    evaluated = (tt for t in pykli_read(prompt) if (tt := eval(t)) is not None)
+    for t in evaluated:
+        pykli_print(t)
 
     sys.exit(0)
 
