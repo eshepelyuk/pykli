@@ -24,18 +24,25 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 * `SELECT`  for Pull queries
 * `INSERT` for values
 
-## TODO
+## TODO (prioritized)
 
-* Session wide variables with `DEFINE`
+* Session variables: `DEFINE`, `UNDEFINE`, `SHOW VARIABLES`
+* `INSERT ... SELECT ... EMIT CHANGES`
+* Semantic versioned release and publish to PyPI
+* Auto detect when needed output via pager
+* Push queries, i.e. with `EMIT CHANGES` for `SELECT` statement
+* In-place KSQL editing with default editor
+* Full KSQL syntax support with Pygments
 * Metadata autocompletion
     * table ans stream names
     * column names and functions in queries
     * topic and connector names
-* Full KSQL syntax support with Pygments
-* Configuration file
-* Push queries, i.e. with `EMIT CHANGES`
-* In-place KSQL editing with default editor
+    * session variables
+    * attributes of `WITH` blocks
+* More configuration options and configuration file
+    * pygments theme
+    * server profiles
+    * etc etc
 * Internal help
-* Publish to PyPI
-* Semantic versioning 
-* Output via pager
+
+
