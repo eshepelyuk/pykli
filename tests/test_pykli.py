@@ -217,3 +217,24 @@ exit;
 
     assert "pykli_table_json" not in list_topic_names(ksqldb)
     assert "PYKLI_TABLE_JSON" not in list_table_names(ksqldb)
+
+
+@pytest.mark.e2e
+def test_run_script(mock_input, ksqldb, tmp_path):
+    f = tmp_path / "file.ksql"
+    f.write_text("show streams;show tables;")
+
+    mock_input.send_text(f"""
+run script '{f}';
+exit;
+""")
+
+    runner = CliRunner()
+
+    r1 = runner.invoke(main, [ksqldb.url])
+    assert r1.exit_code == 0
+
+    r2 = runner.invoke(main, ["-f", str(f), ksqldb.url])
+    assert r2.exit_code == 0
+
+    assert r1.output == r2.output

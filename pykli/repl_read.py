@@ -56,10 +56,7 @@ class pykli_prompt:
 def tokenize_run_script(stmt):
     t = stmt.token_first()
     _, path_token = stmt.token_next(stmt.token_index(t))
-    # pok("@@@@")
-    # pok(path_token)
-    # pok("@@@@")
-    # stmt._pprint_tree()
+
     if path_token.ttype is String.Single:
         path = Path(path_token.value.strip("'"))
         if path.exists():
