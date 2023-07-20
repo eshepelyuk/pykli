@@ -96,8 +96,9 @@ exit;
 @pytest.mark.e2e
 def test_functions(mock_input, ksqldb):
     mock_input.send_text("""
+define ff = 'TO_JSON_STRING';
 show functions;
-describe function TO_JSON_STRING;
+describe function ${ff};
 exit;
 """)
 
