@@ -1,6 +1,5 @@
 import base64
 import httpx
-from pprint import pformat
 
 class KsqlDBClient:
     def __init__(self, url, api_key=None, api_secret=None):
@@ -18,6 +17,11 @@ class KsqlDBClient:
     @property
     def url(self):
         return self._url
+
+
+    @property
+    def session_vars(self):
+        return self._session_vars
 
 
     def define(self, name: str, value: str) -> None:
@@ -56,9 +60,3 @@ class KsqlDBClient:
     #         stream_properties=stream_properties,
     #     ):
     #         yield x
-
-    # def close_query(self, query_id):
-        # return self.api.close_query(query_id)
-
-    # def inserts_stream(self, stream_name, rows):
-        # return self.api.inserts_stream(stream_name, rows)

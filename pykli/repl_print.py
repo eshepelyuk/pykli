@@ -64,6 +64,11 @@ KSQL_SHOW_TYPES = {
         ("Type Name", "Schema"),
         lambda rows : ((r["name"], format_ksql_type(r)) for r in rows),
     ),
+    "show_variables": (
+        lambda j : sorted(j["variables"].items()),
+        ("Variable Name", "Value"),
+        lambda rows : (r for r in rows),
+    ),
 }
 
 

@@ -70,10 +70,8 @@ def tokenize_ksql(stmt):
     kw = stmt.token_first()
 
     LOG.debug(f"tokenize_ksql: stmt=<{stmt}>, first_token={pformat(kw)}")
-    if kw.ttype == Keyword or kw.ttype == DDL:
-        yield Stmt(stmt.value)
-    elif kw.match(DML, "insert"):
-        yield Stmt(stmt.value)
+    if kw.ttype == Keyword or kw.ttype == DDL or kw.match(DML, "insert"):
+        yield Stmt(stmt)
     elif kw.match(DML, "select") and "emit changes" not in stmt.value.lower():
         yield PullQuery(stmt.value)
     elif kw.ttype is KRunScript:

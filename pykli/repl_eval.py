@@ -1,6 +1,8 @@
 import httpx
 from pprint import pformat
 
+from sqlparse.tokens import Keyword
+
 from . import LOG
 from .tokens import Stmt, ErrMsg, StmtResponse, Info, PullQuery, QueryResponse, SessionVar
 
@@ -17,10 +19,19 @@ class pykli_eval:
                 case Info(srv):
                     info = self._ksqldb.info()
                     return StmtResponse([info | {"@type": "info", "server": srv}])
-                case Stmt(ksql):
-                    resp = self._ksqldb.stmt(ksql)
-                    LOG.debug(f"KSQL={ksql}, response={pformat(resp)}")
-                    return StmtResponse(resp)
+                case Stmt(stmt):
+                    t1 = stmt.token_first()
+                    _, t2 = stmt.token_next(0)
+                    if t1.match(Keyword, "show") and t2.value == "variables":
+                        return StmtResponse([{
+                            "@type": "show_variables",
+                            "statementText": "show variables;",
+                            "variables": self._ksqldb.session_vars
+                        }])
+                    else:
+                        resp = self._ksqldb.stmt(stmt.value)
+                        LOG.debug(f"KSQL={stmt.value}, response={pformat(resp)}")
+                        return StmtResponse(resp)
                 case PullQuery(ksql):
                     resp = self._ksqldb.pull_query(ksql)
                     LOG.debug(f"KSQL={ksql}, response={pformat(resp)}")

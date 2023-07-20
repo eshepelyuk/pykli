@@ -23,10 +23,10 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 * `TERMINATE`
 * `SELECT`  for Pull queries
 * `INSERT` for values
+* `DEFINE`, `UNDEFINE`
 
 ## TODO (prioritized)
 
-* Session variables: `DEFINE`, `UNDEFINE`, `SHOW VARIABLES`
 * `INSERT ... SELECT ... EMIT CHANGES`
 * Semantic versioned release and publish to PyPI
 * Auto detect when needed output via pager

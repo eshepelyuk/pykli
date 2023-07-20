@@ -99,6 +99,7 @@ def test_functions(mock_input, ksqldb):
 define ff = 'TO_JSON_STRING';
 show functions;
 describe function ${ff};
+show variables;
 exit;
 """)
 
@@ -111,6 +112,8 @@ exit;
     assert "[ Function Overview ]" in r.output
     assert "Jar         | internal" in r.output
     assert "| Signature               | Returns | Description |" in r.output
+    assert "| Variable Name | Value          |" in r.output
+    assert "| ff            | TO_JSON_STRING |" in r.output
 
 
 @pytest.mark.e2e

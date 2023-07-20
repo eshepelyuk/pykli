@@ -1,7 +1,6 @@
 import sqlparse
 import pytest
-
-from pykli.tokens import initialize_sqlparse, SessionVar, KRunScript
+from pykli.tokens import initialize_sqlparse, Stmt, SessionVar, KRunScript
 from pykli.repl_read import tokenize_ksql
 
 
@@ -48,3 +47,13 @@ def test_tokenize_ksql_undefine(ksql):
     assert t.name == "my_var"
     assert t.val is None
 
+
+# TODO more test
+@pytest.mark.parametrize("ksql", [
+    ("show variables;"),
+    ("  SHOW variables "),
+])
+def test_tokenize_ksql_stmt(ksql):
+    stmt = sqlparse.parse(ksql)[0]
+    t = next(tokenize_ksql(stmt))
+    assert isinstance(t, Stmt)
