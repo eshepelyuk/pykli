@@ -15,6 +15,8 @@ def ksqldb(ksqldb_url):
     for i in range(5):
         try:
             ksqldb.stmt("""
+drop table if exists query_pykli_table_json delete topic;
+drop table if exists pykli_table_json delete topic;
 drop stream if exists pykli_stream_json delete topic;
 drop type if exists pykli_type;
 drop connector if exists pykli_connector;
@@ -41,7 +43,6 @@ def list_stream_names(ksqldb) -> list[str]:
     return [t["name"] for t in json["streams"]]
 
 
-
 def list_table_names(ksqldb) -> list[str]:
     json = ksqldb.stmt("show tables;")[0]
     return [t["name"] for t in json["tables"]]
@@ -51,4 +52,8 @@ def list_connector_names(ksqldb) -> list[str]:
     json = ksqldb.stmt("show connectors;")[0]
     return [t["name"] for t in json["connectors"]]
 
+
+def list_query_ids(ksqldb) -> list[str]:
+    json = ksqldb.stmt("show queries;")[0]
+    return [t["id"] for t in json["queries"]]
 

@@ -14,8 +14,8 @@ import sqlparse
 from . import MONOKAI_STYLE, HISTORY_FILE, LOG
 from .completer import pykli_completer
 from .keybindgings import pykli_keys
-from .tokens import KSQL, Stmt, ErrMsg, KRunScript, PullQuery, SessionVar
-
+from .tokens import KSQL, Stmt, ErrMsg, PullQuery, SessionVar
+from .repl_print import pok
 
 class file_prompt:
     def __init__(self, path):
@@ -54,14 +54,19 @@ class pykli_prompt:
 
 
 def tokenize_run_script(stmt):
-    _, path_token = stmt.token_next(0)
+    t = stmt.token_first()
+    _, path_token = stmt.token_next(stmt.token_index(t))
+    # pok("@@@@")
+    # pok(path_token)
+    # pok("@@@@")
+    # stmt._pprint_tree()
     if path_token.ttype is String.Single:
         path = Path(path_token.value.strip("'"))
         if path.exists():
             for stmt in sqlparse.parse(path.read_text()):
                 yield from tokenize_ksql(stmt)
         else:
-            yield ErrMsg(f"'{path}' not found")
+            yield ErrMsg(f"file not found: {path}")
     else:
         yield ErrMsg(f"syntax error: {stmt}")
 
@@ -74,7 +79,7 @@ def tokenize_ksql(stmt):
         yield Stmt(stmt)
     elif kw.match(DML, "select") and "emit changes" not in stmt.value.lower():
         yield PullQuery(stmt.value)
-    elif kw.ttype is KRunScript:
+    elif kw.ttype is KSQL.RunScript:
         yield from tokenize_run_script(stmt)
     elif kw.ttype is KSQL.Define:
         _, cmp = stmt.token_next(stmt.token_index(kw))

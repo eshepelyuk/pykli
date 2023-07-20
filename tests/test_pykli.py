@@ -6,7 +6,8 @@ from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 
 from pykli.__main__ import main
-from .conftest import list_type_names, list_topic_names, list_stream_names, list_connector_names
+from .conftest import list_type_names, list_topic_names, list_stream_names, list_connector_names, list_table_names, list_query_ids
+
 
 @pytest.fixture(scope="function")
 def mock_input():
@@ -157,19 +158,18 @@ exit;
     assert "PYKLI_CONNECTOR" not in list_connector_names(ksqldb)
 
 
-@pytest.mark.skip
 @pytest.mark.e2e
 def test_tables(mock_input, ksqldb):
     mock_input.send_text("""
-create or replace stream pykli_json (
-  id varchar key, `firstName` varchar, "Age" int
-) with (kafka_topic = 'pykli_json', partitions = 1, value_format = 'json');
+create or replace table pykli_table_json (
+    id varchar primary key, `firstName` varchar, "Age" int
+) with (kafka_topic = 'pykli_table_json', partitions = 1, value_format = 'json');
+describe pykli_table_json;
+show tables;
+show topics;
 
-insert into pykli_json (id, `firstName`, `Age`) values ('uuid1', 'Tom', 20);
-insert into pykli_json (id, `firstName`, `Age`) values ('uuid2', 'Fred', 30);
-
-select * from pykli_json where `firstName` = 'Tom';
-select * from pykli_json where `Age` > 20;
+create table query_pykli_table_json as select * from pykli_table_json;
+show queries;
 
 exit;
 """)
@@ -179,23 +179,41 @@ exit;
     output = r.output.split("\n")
 
     assert r.exit_code == 0
-    assert "Stream created" in output
-    assert output.count("| ID    | firstName | Age |") == 2
-    assert output.count("| uuid1 | Tom       |  20 |") == 1
-    assert output.count("| uuid2 | Fred      |  30 |") == 1
+    assert "Table created" in output
+    assert "| Field     | Type          |" in output
+    assert "| ID        | VARCHAR (key) |" in output
+    assert "| Table Name       | Kafka Topic      | Key Format | Value Format | Windowed |" in output
+    assert "| PYKLI_TABLE_JSON | pykli_table_json | KAFKA      | JSON         | False    |" in output
 
-    assert "pykli_json" in list_topic_names(ksqldb)
-    assert "PYKLI_JSON" in list_stream_names(ksqldb)
+    queries = list_query_ids(ksqldb)
+    assert len(queries) == 1
 
-    mock_input.send_text("""
-drop stream pykli_json delete topic;
+    assert f"Created query with ID {queries[0]}" in output
+    assert "| Query ID" in r.output
+    assert f"| {queries[0]} | PERSISTENT | RUNNING |" in r.output
+
+    assert "pykli_table_json" in list_topic_names(ksqldb)
+    assert "PYKLI_TABLE_JSON" in list_table_names(ksqldb)
+
+    mock_input.send_text(f"""
+terminate {queries[0]};
 exit;
 """)
+    r = runner.invoke(main, [ksqldb.url])
 
+    assert "Query terminated." in r.output
+    assert len(list_query_ids(ksqldb)) == 0
+
+    mock_input.send_text("""
+drop table query_pykli_table_json delete topic;
+drop table pykli_table_json delete topic;
+exit;
+""")
     r = runner.invoke(main, [ksqldb.url])
 
     assert r.exit_code == 0
-    assert "Source `PYKLI_JSON` (topic: pykli_json) was dropped." in r.output
+    assert "Source `QUERY_PYKLI_TABLE_JSON` (topic: QUERY_PYKLI_TABLE_JSON) was dropped." in r.output
+    assert "Source `PYKLI_TABLE_JSON` (topic: pykli_table_json) was dropped." in r.output
 
-    assert "pykli_json" not in list_topic_names(ksqldb)
-    assert "PYKLI_JSON" not in list_tlist_stream_names(ksqldb)
+    assert "pykli_table_json" not in list_topic_names(ksqldb)
+    assert "PYKLI_TABLE_JSON" not in list_table_names(ksqldb)

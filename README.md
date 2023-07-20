@@ -22,17 +22,16 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
 * `RUN SCRIPT`
 * `TERMINATE`
 * `SELECT`  for Pull queries
-* `INSERT` for values
+* `INSERT`
 * `DEFINE`, `UNDEFINE`
 
 ## TODO (prioritized)
 
-* `INSERT ... SELECT ... EMIT CHANGES`
 * Semantic versioned release and publish to PyPI
 * Auto detect when needed output via pager
 * Push queries, i.e. with `EMIT CHANGES` for `SELECT` statement
 * In-place KSQL editing with default editor
-* Full KSQL syntax support with Pygments
+* KSQL syntax support with Pygments
 * Metadata autocompletion
     * table ans stream names
     * column names and functions in queries
@@ -44,5 +43,8 @@ pip install -U git+https://github.com/eshepelyuk/pykli@main
     * server profiles
     * etc etc
 * Internal help
+* `PAUSE` / `RESUME`
+* `DESCRIBE ... EXTENDED`
+* `EXPLAIN`
 
 

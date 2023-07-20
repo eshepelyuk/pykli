@@ -30,8 +30,6 @@ class SessionVar(NamedTuple):
     name: str
     val: str | None
 
-KRunScript = Keyword.KRunScript
-
 KSQL = Keyword.KSQL
 
 def initialize_sqlparse():
@@ -39,7 +37,7 @@ def initialize_sqlparse():
     lex.clear()
 
     lex.set_SQL_REGEX([
-        (r"run\s+script\b", KRunScript),
+        (r"run\s+script\b", KSQL.RunScript),
     ] + keywords.SQL_REGEX)
 
     lex.add_keywords(keywords.KEYWORDS_COMMON)
