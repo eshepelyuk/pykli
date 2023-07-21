@@ -12,6 +12,7 @@ on:
     paths-ignore:
       - '*.md'
       - '*.puml'
+      - 'cspell.json'
       - '.github/workflows/release.yaml'
 jobs:
   build_job:

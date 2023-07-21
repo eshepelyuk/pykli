@@ -1,5 +1,7 @@
 # pyKLI
 
+[![PyPI version](https://badge.fury.io/py/pykli.svg)](https://badge.fury.io/py/pykli)
+
 Interactive [ksqlDB](https://ksqldb.io/) command line client
 with autocompletion and syntax highlighting written in Python.
 
@@ -9,9 +11,17 @@ PRs and suggestions are welcome.
 
 ## Installation
 
-```sh
-pip install -U git+https://github.com/eshepelyuk/pykli@main
-```
+* Latest released version
+
+    ```sh
+    pip install pykli
+    ```
+
+* From latest source code
+
+    ```sh
+    pip install -U git+https://github.com/eshepelyuk/pykli@main
+    ```
 
 ## Supported KSQL commands
 

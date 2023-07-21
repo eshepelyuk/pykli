@@ -1,9 +1,13 @@
 [tool.poetry]
-name = "pykli"
-version = "0.0.1"
-description = "ksqlDB command line client"
+name = "pyKLI"
+version = "1.0.0"
+description = "Interactive ksqlDB command line client with autocompletion and syntax highlighting"
+license = "MIT"
 authors = ["Ievgenii Shepeliuk <eshepelyuk@gmail.com>"]
 readme = "README.md"
+homepage = "https://github.com/eshepelyuk/pykli"
+repository = "https://github.com/eshepelyuk/pykli"
+keywords = ["cli", "kafka", "tui", "confluent", "ksql", "ksqldb"]
 packages = [{include = "pykli"}]
 
 [tool.poetry.dependencies]
