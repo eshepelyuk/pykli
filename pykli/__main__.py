@@ -13,7 +13,7 @@ from .tokens import Info, ErrMsg, initialize_sqlparse
 @click.command()
 @click.option('-f', '--file', help="execute commands from file, then exit",
     type=click.Path(exists=True, path_type=pathlib.Path))
-@click.argument("server", default = "http://localhost:8088")
+@click.argument("server")
 @click.version_option(prog_name="pyKLI")
 def main(server, file):
     """
