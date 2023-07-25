@@ -42,7 +42,16 @@ jobs:
       - uses: extractions/setup-just@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: just test
+      - uses: jaxxstorm/action-install-gh-release@v1
+        with:
+          repo: astral-sh/ruff
+          tag: v0.0.280
+          cache: enable
+          # extension-matching: disable
+          # rename-to: skaffold
+          # chmod: 0755
+      - run:
+          just test
       - name: test report junit
         uses: dorny/test-reporter@v1
         if: ${{ success() || failure() }}
@@ -54,4 +63,3 @@ jobs:
         if: ${{ failure() }}
         run:
           docker ps
-

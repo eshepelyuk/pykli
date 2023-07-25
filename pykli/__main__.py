@@ -26,12 +26,13 @@ def main(server, file):
     initialize_sqlparse()
 
     eval = pykli_eval(KsqlDBClient(server))
-    prompt = pykli_prompt() if file is None else file_prompt(file)
 
     if isinstance(pykli_print(eval(Info(server))), ErrMsg):
         sys.exit(1)
 
-    evaluated = (tt for t in pykli_read(prompt) if (tt := eval(t)) is not None)
+    read = pykli_read(pykli_prompt() if file is None else file_prompt(file))
+
+    evaluated = (tt for t in read if (tt := eval(t)) is not None)
     for t in evaluated:
         pykli_print(t)
 

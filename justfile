@@ -1,5 +1,3 @@
-
-
 # list available receipes
 @default:
   just --list
@@ -10,13 +8,16 @@ up:
 down:
   docker-compose -f tests/docker-compose.yaml down -v --remove-orphans
 
+lint:
+  ruff pykli/ tests/
+
 test-unit filter='':
   poetry run pytest -o junit_suite_name='Unit tests' -m 'not e2e' --capture=tee-sys --junit-xml=test-unit.xml -k '{{filter}}'
 
 test-e2e filter='': up
   poetry run pytest -o junit_suite_name='E2E tests' -m e2e --capture=tee-sys --junit-xml=test-e2e.xml -k '{{filter}}'
 
-test: test-unit test-e2e
+test: lint test-unit test-e2e
 
 run srv="http://localhost:28088":
   poetry run pykli {{srv}}

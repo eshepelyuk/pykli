@@ -121,7 +121,8 @@ def print_show(data_type, json):
 
 def print_describe_src(data):
     def row_extractor(rows): return ((r["name"], format_ksql_type(r)) for r in rows)
-    ff = format_output(row_extractor(data["fields"]), DESCRIBE_SRC_HEADERS, format_name="psql", preprocessors=(style_output,),
+    ff = format_output(row_extractor(data["fields"]), DESCRIBE_SRC_HEADERS, format_name="psql",
+            preprocessors=(style_output,),
             header_token=Token.String, odd_row_token=None, even_row_token=None,
             style=MONOKAI_STYLE, include_default_pygments_style=False)
     pok("\n".join(ff))
@@ -148,7 +149,8 @@ def print_func_variations(func_name, func_arr):
         for r in rows:
             args = [f"{a['name']} {a['type']}" for a in r["arguments"]]
             yield (f"{func_name}({', '.join(args)})", r["returnType"], r["description"])
-    ff = format_output(func_extractor(func_arr), DESCRIBE_FUNC_VARS_HEADERS, format_name="psql", preprocessors=(style_output,),
+    ff = format_output(func_extractor(func_arr), DESCRIBE_FUNC_VARS_HEADERS, format_name="psql",
+            preprocessors=(style_output,),
             header_token=Token.String, odd_row_token=None, even_row_token=None, sep_title="Variation #{n}",
             style=MONOKAI_STYLE, include_default_pygments_style=False)
     pok("\n".join(ff))
@@ -166,7 +168,7 @@ def print_describe_func(data):
 def print_stmt(json_arr):
     for json in json_arr:
         match json:
-            case {"@type": tp, "statementText": stmt} if stmt.startswith(("show", "list", "SHOW", "LIST")):
+            case {"statementText": stmt} if stmt.startswith(("show", "list", "SHOW", "LIST")):
                 print_show(json["@type"], json)
             case {"@type": "sourceDescription", "sourceDescription": data}:
                 print_describe_src(data)

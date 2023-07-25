@@ -2,7 +2,8 @@
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
-[![PyPI version](https://badge.fury.io/py/pykli.svg)](https://badge.fury.io/py/pykli)
+![PyPI - Version](https://img.shields.io/pypi/v/pykli?color=greenlight)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pykli)
 ![PyPI - License](https://img.shields.io/pypi/l/pykli)
 
 Interactive [ksqlDB](https://ksqldb.io/) command line client
@@ -15,16 +16,14 @@ PRs and suggestions are welcome.
 ## Installation
 
 * Latest released version
-
-    ```sh
-    pip install pykli
-    ```
+```sh
+pip install pykli
+```
 
 * From latest source code
-
-    ```sh
-    pip install -U git+https://github.com/eshepelyuk/pykli@main
-    ```
+```sh
+pip install -U git+https://github.com/eshepelyuk/pykli@main
+```
 
 ## Supported KSQL commands
 
@@ -40,7 +39,6 @@ PRs and suggestions are welcome.
 
 ## TODO (prioritized)
 
-* Semantic versioned release and publish to PyPI
 * Auto detect when needed output via pager
 * Push queries, i.e. with `EMIT CHANGES` for `SELECT` statement
 * In-place KSQL editing with default editor
@@ -59,5 +57,3 @@ PRs and suggestions are welcome.
 * `PAUSE` / `RESUME`
 * `DESCRIBE ... EXTENDED`
 * `EXPLAIN`
-
-

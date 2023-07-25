@@ -1,1 +1,10 @@
-{"version":"0.2","language":"en","words":["ksql","Pygments","pykli"],"flagWords":[]}
+{
+  "flagWords": [],
+  "language": "en",
+  "version": "0.2",
+  "words": [
+    "Pygments",
+    "ksql",
+    "pykli"
+  ]
+}

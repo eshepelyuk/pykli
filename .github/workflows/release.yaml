@@ -17,7 +17,7 @@ jobs:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
       - run: |
-          poetry self add poetry-version-plugin
+          poetry self add "poetry-dynamic-versioning[plugin]"
       - uses: bahmutov/npm-install@v1
       - run: npx semantic-release
         env:

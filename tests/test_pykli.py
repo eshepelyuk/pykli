@@ -6,7 +6,8 @@ from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 
 from pykli.__main__ import main
-from .conftest import list_type_names, list_topic_names, list_stream_names, list_connector_names, list_table_names, list_query_ids
+from .conftest import list_type_names, list_topic_names, list_stream_names
+from .conftest import list_connector_names, list_table_names, list_query_ids
 
 
 @pytest.fixture(scope="function")

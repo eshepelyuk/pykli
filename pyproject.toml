@@ -29,16 +29,19 @@ pytest-mock = "^3.11.1"
 exceptiongroup = {version = "^1", python = "<3.11"}
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.ruff]
-line-length = 140
+line-length = 120
 
 [tool.pytest.ini_options]
 markers = [
     "e2e: e2e tests",
 ]
 
-[tool.poetry-version-plugin]
-source = "git-tag"
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+pattern = "default-unprefixed"
+metadata = false

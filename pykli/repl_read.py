@@ -15,7 +15,7 @@ from . import MONOKAI_STYLE, HISTORY_FILE, LOG
 from .completer import pykli_completer
 from .keybindgings import pykli_keys
 from .tokens import KSQL, Stmt, ErrMsg, PullQuery, SessionVar
-from .repl_print import pok
+
 
 class file_prompt:
     def __init__(self, path):
