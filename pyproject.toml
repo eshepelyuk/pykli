@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyKLI"
-version = "1.0.0"
+version = "1.1.1"
 description = "Interactive ksqlDB command line client with autocompletion and syntax highlighting"
 license = "MIT"
 authors = ["Ievgenii Shepeliuk <eshepelyuk@gmail.com>"]
