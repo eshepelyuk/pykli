@@ -1,7 +1,9 @@
 # pyKLI
 
-[![PyPI version](https://badge.fury.io/py/pykli.svg)](https://badge.fury.io/py/pykli)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+[![PyPI version](https://badge.fury.io/py/pykli.svg)](https://badge.fury.io/py/pykli)
+![PyPI - License](https://img.shields.io/pypi/l/pykli)
 
 Interactive [ksqlDB](https://ksqldb.io/) command line client
 with autocompletion and syntax highlighting written in Python.
