@@ -6,12 +6,14 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pykli)
 ![PyPI - License](https://img.shields.io/pypi/l/pykli)
 
-Interactive [ksqlDB](https://ksqldb.io/) command line client
+Interactive command line client for [ksqlDB](https://ksqldb.io/)
 with autocompletion and syntax highlighting written in Python.
 
-This project is in an early preview stage. Please try it and provide your feedback.
+Inspired by and also borrowed some code from the great family of CLI tools https://www.dbcli.com/.
 
-PRs and suggestions are welcome.
+The project is in early stage, but usable for supported functionality.
+
+All your PRs and suggestions are welcome.
 
 ## Installation
 
@@ -24,36 +26,42 @@ pip install pykli
 ```sh
 pip install -U git+https://github.com/eshepelyuk/pykli@main
 ```
+## Features
 
-## Supported KSQL commands
+* Command history and search, history based autosuggestion.
+* KSQL command keywords autocompletion.
+* Run multiple commands from local file.
+* Partial KSQL syntax highlighting based on `Pygments` SQL.
+* Pretty tabular output with highlighting based on `Pygments` themes.
+* Supported KSQL commands.
 
-* `SHOW`, `LIST`
-* `DESCRIBE`, without `EXTENDED`
-* `DROP`
-* `CREATE`
-* `RUN SCRIPT`
-* `TERMINATE`
-* `SELECT`  for Pull queries
-* `INSERT`
-* `DEFINE`, `UNDEFINE`
+    * `SHOW`, `LIST`
+    * `DESCRIBE`, without `EXTENDED`
+    * `DROP`
+    * `CREATE`
+    * `RUN SCRIPT`
+    * `TERMINATE`
+    * `SELECT`  for Pull queries
+    * `INSERT`
+    * `DEFINE`, `UNDEFINE`
 
 ## TODO (prioritized)
 
-* Auto detect when needed output via pager
 * Push queries, i.e. with `EMIT CHANGES` for `SELECT` statement
-* In-place KSQL editing with default editor
+* `PAUSE` / `RESUME`
 * KSQL syntax support with Pygments
+* `DESCRIBE ... EXTENDED`
+* `EXPLAIN`
+* Auto detect when needed output via pager
 * Metadata autocompletion
     * table ans stream names
     * column names and functions in queries
     * topic and connector names
     * session variables
     * attributes of `WITH` blocks
+* In-place KSQL editing with default editor
+* Internal help
 * More configuration options and configuration file
     * pygments theme
     * server profiles
     * etc etc
-* Internal help
-* `PAUSE` / `RESUME`
-* `DESCRIBE ... EXTENDED`
-* `EXPLAIN`
